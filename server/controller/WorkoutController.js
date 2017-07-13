@@ -1,6 +1,15 @@
 var mongoose = require('mongoose')
 var Exercise = mongoose.model('Exercise');
 module.exports = {
+  getAllExercises: function(req,res){
+    Exercise.find({},(err,exer)=>{
+      if(err){
+        res.json(err)
+      } else {
+        res.json(exer)
+      }
+    })
+  },
   add: function(req,res){
     Exercise.create({Title:req.body.title,Description: req.body.description,Category:req.body.category},(err,exer)=>{
       if(err){
@@ -43,5 +52,27 @@ module.exports = {
       }
       res.json("Success")
     })
+  },
+  get: function(req,res){
+    var today = req.params.date;
+    var minDate = new Date(today);
+
+    var maxDate = new Date(today);
+    var numberOfDaysToAdd = 1;
+    maxDate.setDate(maxDate.getDate() + numberOfDaysToAdd);
+    maxDate.toDateString();
+    minDate.toDateString();
+
+    Exercise.find({
+
+      createdAt: {
+        "$gte": minDate,
+        "$lt": maxDate
+    }
+  },function(err,exer){
+
+    })
+
+    res.json('got there')
   }
 }
