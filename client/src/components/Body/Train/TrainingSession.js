@@ -18,7 +18,7 @@
 
     }
     componentDidMount(){
-      axios.get("/train/show/fingers").then((res)=>{
+      axios.get("/train/show/").then((res)=>{
         this.setState({workOuts: res.data})
       })
     }

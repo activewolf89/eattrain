@@ -9,7 +9,7 @@ app.post('/train/remove', (req,res)=>{
   WorkRoute.remove(req,res);
 })
 //
-app.get('/train/show/fingers', (req,res)=>{
+app.get('/train/show', (req,res)=>{
   WorkRoute.show(req,res);
 })
 app.post('/train/update',(req,res)=>{

@@ -6,7 +6,7 @@
   import Train from './Body/Train/Train.js';
   import TrainingSession from './Body/Train/TrainingSession.js';
   //exercise
-  import Exercise from './Body/Train/CRUDExercise.js';
+  import Exercise from './Body/Train/Exercise.js';
   import AddExercise from './Body/Train/AddExercise.js';
   //
   import Eat from './Body/Eat/Eat.js';
@@ -31,7 +31,6 @@
             <Route exact path = "/train/hangboard" component={TrainingSession} />
             <Route exact path = "/exercise" component={Exercise} />
             <Route exact path = "/exercise/add" component={AddExercise} />
-
             <Route exact path= "/eat" component={Eat} />
             <Route exact path= "/about" component={About} />
             <Route exact path= "/login" component={Login} />

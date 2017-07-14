@@ -3,12 +3,7 @@
   import {Link} from 'react-router-dom';
 
   class Train extends Component{
-    componentWillReceiveProps() {
-      alert('props')
-}
-componentDidMount(){
-  alert('mounted')
-}
+
     render(){
       return(
           <Grid style={{border:"1px solid black", height: "100%", width:"100%"}}>
