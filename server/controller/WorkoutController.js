@@ -20,7 +20,7 @@ module.exports = {
     })
   },
   show: function(req,res){
-    Exercise.find({},(err,exer)=>{
+    Exercise.find({Category:"fingers"},(err,exer)=>{
       if(err){
         res.json(err);
       }

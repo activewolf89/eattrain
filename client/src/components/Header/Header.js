@@ -1,43 +1,24 @@
   import React,{Component} from "react";
-  import {Grid,Col,Row} from 'react-bootstrap';
-  import home from './../../images/home_large_icon.jpg';
-  import {Link}  from 'react-router-dom'
-  class Header extends Component{
-    constructor(props){
-      super(props);
-      this.state = {
-        key: 1,
-        day: new Date().toLocaleDateString(),
-        time: new Date().toLocaleTimeString(),
-      };
-      this.tick = this.tick.bind(this);
-      this.handleSelect = this.handleSelect.bind(this);
-    }
+  import {Nav,Navbar,NavItem} from "react-bootstrap";
+  import {LinkContainer, IndexLinkContainer} from 'react-router-bootstrap';
 
-    componentDidMount(){
-      var intervalId = setInterval(this.tick,1000)
-      this.setState({intervalId: intervalId});
-    }
-    componentWillUnmount(){
-      clearInterval(this.state.intervalId);
-    }
-     tick(){
-      this.setState(()=>{this.setState({time: new Date().toLocaleTimeString()})})
-    }
-    handleSelect(Key){
-      console.log('selected' + Key)
-      this.setState({key: Key})
-    }
+  class Header extends Component{
+
     render(){
       return(
-        <Grid>
-          <Row className="show-grid">
-            <Col md={1}><Link to="/"><img src={home} alt="Cannot find" width="50px" height="50px"/></Link></Col>
-            <Col md={8}><h4> Welcome Home Reed, today is {this.state.day}  Current Time: {this.state.time}</h4></Col>
+        <Navbar>
+          <Nav>
+            <IndexLinkContainer to="/" activeClassName="active">
+              <NavItem eventKey={1}>Home</NavItem>
+            </IndexLinkContainer>
+          </Nav>
+          <Nav>
+            <LinkContainer to="/exercise">
+              <NavItem eventKey={2}>Exercises</NavItem>
+            </LinkContainer>
+          </Nav>
 
-          </Row>
-          <hr></hr>
-          </Grid>
+        </Navbar>
 
           )
           }
