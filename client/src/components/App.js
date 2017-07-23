@@ -14,7 +14,7 @@
   import Technology from './Body/AboutWeb/Technology.js';
   import Login from './Body/LoginReg/Login.js';
   import Register from './Body/LoginReg/Registration.js';
-  import {Route,Switch} from 'react-router-dom';
+  import {Route} from 'react-router-dom';
 
   class App extends Component{
 
@@ -24,7 +24,7 @@
           <div className = "header" >
             <Header />
           </div>
-          <div className = "body" style={{height:"300px"}}>
+          <div className = "body" style={{ minHeight: "600px"}}>
 
 
             <Route exact path = "/train" component={Train} />
@@ -39,7 +39,7 @@
             <Route exact path = "/" component={Home} />
 
           </div>
-          <div className = "footer" style={{height: "100px"}}>
+          <div className = "footer" style={{height: "100px", marginTop:"20px"}}>
             <Footer />
           </div>
 
