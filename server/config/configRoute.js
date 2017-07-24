@@ -1,5 +1,7 @@
 var HomeRoute = require('./../controller/HomeController.js')
 var WorkRoute = require('./../controller/WorkoutController.js')
+var SessionRoute = require('./../controller/SessionController.js')
+
 module.exports = function(app){
 //all CRUD for workout
 app.post('/train/add',(req,res)=>{
@@ -24,5 +26,11 @@ app.get('/show/weather',(req,res)=>{
 })
 app.get('/train/session/exercises/all',(req,res)=>{
   WorkRoute.getAllExercises(req,res)
+})
+app.post('/train/hangboardsession', (req,res)=>{
+  SessionRoute.addHangboardSession(req,res)
+})
+app.get('/train/hangboardsession/get/:type/:sortFrom',(req,res)=>{
+  SessionRoute.getHangBoardSession(req,res)
 })
 }

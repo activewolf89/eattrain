@@ -67,8 +67,6 @@ class AddExercise extends Component{
               <Modal.Body>
                 You have added <b>{this.state.formTitle}</b> to list of workouts
               </Modal.Body>
-
-
             </Modal>
 
         }

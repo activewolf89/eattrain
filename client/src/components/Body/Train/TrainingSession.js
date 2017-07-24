@@ -1,127 +1,269 @@
   import React,{Component} from "react";
   import axios from 'axios';
-  import TrainSet from './TrainSet';
-  import {Button} from 'react-bootstrap';
-
+  import {Button,Grid,Row,Col,Modal} from 'react-bootstrap';
+  import TrainSet from './TrainSet.js';
   class TrainingSession extends Component{
     constructor(props){
       super(props);
       this.state = {
+        modal: false,
         workOuts: [],
-        numberOfExercises: 1,
-        sessionExercises: []
+        sessionExercises: [{key:1, title:"--select--", sets:[{key:1, goal:"",reps:"",comments:"",res:"",diff:""}],notes:""}],
+        defaultSessionExercises: {key:1, title:"--select--", sets:[{key:1, goal:"",reps:"",comments:"",res:"",diff:""}],notes:""},
+        exerciseTemplate: "Overall Workout",
+        weight: 0,
+        reps: 0,
+        criteria: false,
+        sortFrom: "Most Recent Session"
+
       }
-      this.handleAddingGroupSet = this.handleAddingGroupSet.bind(this);
       this.handleSubmit = this.handleSubmit.bind(this);
-      this.handleInputChange = this.handleInputChange.bind(this);
-    }
-
-    handleInputChange(controlName,value){
-      console.log(this.state)
-      var exerciseSessionCopy = this.state.sessionExercises.slice();
-      var spotToResetInArray;
-      var exerciseNumber = "";
-      var  exerciseInput = "";
-      var exerciseSet = "";
-      var triggeredFirstLetter = false;;
-      for(var i = 0; i < controlName.length;i++){
-        if(isNaN(controlName[i]) === false && triggeredFirstLetter === false){
-          exerciseSet += controlName[i]
-        }
-        if(isNaN(controlName[i]) === true){
-          triggeredFirstLetter = true;
-
-          exerciseInput += controlName[i]
-        }
-        if(triggeredFirstLetter === true && isNaN(controlName[i]) === false){
-          exerciseNumber += controlName[i]
-        }
-      }
-      var objectToChange = false;
-      var keyToUpdate = false;
-      for(var i = 0; i < exerciseSessionCopy.length;i++){
-        if(exerciseSessionCopy[i].key == exerciseNumber){
-          objectToChange = exerciseSessionCopy[i];
-          keyToUpdate = i;
-        }
-      }
-
-      if(!objectToChange){
-        //if no object to change we add a new object
-        objectToChange = {};
-        objectToChange["key"] = exerciseNumber;
-        objectToChange[exerciseInput] = value;
-        objectToChange["sets"] = {}
-        this.setState({
-          sessionExercises: [...this.state.sessionExercises, objectToChange]
-        })
-      } else {
-        //if there is an object to change, we check if there is a set input
-        if(exerciseSet == ""){
-          objectToChange[exerciseInput] = value;
-        } else {
-          //if there is an object and its a set input to change, check if theres a set already
-          var objectSetToChange = false;
-          var objectSetKeyToChange = false
-          for(var objectSetKey in objectToChange.sets){
-            if(objectSetKey == exerciseSet){
-              objectSetToChange = objectToChange.sets[objectSetKey];
-              objectSetKeyToChange = objectSetKey
-            }
-          }
-          //add to the object to change if no object to change
-          if(!objectSetToChange){
-            var objectToSetWithinSet = {};
-            objectToSetWithinSet[exerciseInput] = value;
-            var addObject = {};
-            addObject[exerciseInput] = value;
-            objectToChange.sets[exerciseSet] = addObject;
-          } else {
-            //found an object with the matching set, now set value within
-            objectSetToChange[exerciseInput] = value;
-            objectToChange["sets"][objectSetKeyToChange] = objectSetToChange
-          }
-        }
-          exerciseSessionCopy.splice(keyToUpdate,1,objectToChange);
-          this.setState({
-            sessionExercises: exerciseSessionCopy
-          })
-      }
-    }
-    handleSubmit(e){
-      e.preventDefault();
-
-    }
-    handleAddingGroupSet(){
-
-      this.setState({
-        numberOfExercises: this.state.numberOfExercises + 1,
-
-
-      })
-
+      this.handleChangeInput = this.handleChangeInput.bind(this);
+      this.handleAddingGroupSet = this.handleAddingGroupSet.bind(this);
+      this.handleAddingSetOfExercise = this.handleAddingSetOfExercise.bind(this);
+      this.handleCriteriaSubmit = this.handleCriteriaSubmit.bind(this);
+      this.handleCriteriaChange = this.handleCriteriaChange.bind(this);
+      this.handleClearCriteria = this.handleClearCriteria.bind(this);
     }
     componentDidMount(){
+
       axios.get("/train/show/").then((res)=>{
         this.setState({workOuts: res.data})
       })
     }
+    handleClearCriteria(){
+
+      this.setState({
+        sessionExercises: [this.state.defaultSessionExercises],
+        criteria: false,
+        weight: 0,
+        reps: 0,
+        defaultSessionExercises: {key:1, title:"--select--", sets:[{key:1, goal:"",reps:"",comments:"",res:"",diff:""}],notes:""},
+
+      })
+    }
+    handleCriteriaChange(name,value){
+      if(value == "Fitness Test"){
+        this.setState({
+          [name]:value,
+        })
+      } else {
+        this.setState({
+          [name]:value,
+        })
+
+      }
+
+    }
+    handleCriteriaSubmit(e){
+      e.preventDefault();
+      axios({
+        method: 'get',
+        url: `/train/hangboardsession/get/${this.state.exerciseTemplate}/${this.state.sortFrom}`,
+      }).then((res)=>{
+        if(res.data){
+          for(var i = 0; i < res.data.ArrayOfExercises.length;i++){
+
+            for(var m = 0; m < res.data.ArrayOfExercises[i].sets.length;m++){
+            res.data.ArrayOfExercises[i].sets[m].goal = Number(res.data.ArrayOfExercises[i].sets[m].res) + Number(this.state.weight);
+            res.data.ArrayOfExercises[i].sets[m].reps = Number(res.data.ArrayOfExercises[i].sets[m].reps) + Number(this.state.reps);
+            res.data.ArrayOfExercises[i].sets[m].res = "";
+            }
+          }
+          this.setState({
+            sessionExercises: res.data.ArrayOfExercises
+          })
+        } else {
+          this.setState({
+            criteria: false,
+            modal: true
+          })
+          setTimeout(()=>{this.setState({modal:false})},2000)
+
+        }
+      })
+      this.setState({
+        criteria: true
+      })
+    }
+
+    handleAddingSetOfExercise(exNum){
+      var copyOfArrayExercise = this.state.sessionExercises.slice();
+      var newSessionExercise = Object.assign({},this.state.defaultSessionExercises);
+      var newKey;
+      for(var i = 0; i < copyOfArrayExercise.length ;i++){
+        if(copyOfArrayExercise[i].key == exNum){
+
+          newKey = copyOfArrayExercise[i].sets.length + 1
+          newSessionExercise.key = newKey;
+          copyOfArrayExercise[i].sets.push(newSessionExercise);
+        }
+      }
+      this.setState({
+        sessionExercises: copyOfArrayExercise,
+        defaultSessionExercises: {key:1, title:"--select--",sets:[{key:1, goal:"",reps:"",comments:"",res:"",diff:""}],notes:""}
+      })
+    }
+    handleAddingGroupSet(){
+      var currentCount = 1;
+      var newSesh = Object.assign({},this.state.defaultSessionExercises);
+
+      var currentArrayOfSession = this.state.sessionExercises.slice()
+      for(var i = 0; i < currentArrayOfSession.length;i++){
+        currentCount++;
+      }
+      newSesh.key = currentCount;
+      currentArrayOfSession.push(newSesh);
+      this.setState({
+        sessionExercises: currentArrayOfSession,
+        defaultSessionExercises: {key:1, title:"--select--",sets:[{key:1, goal:"",reps:"",comments:"",res:"",diff:""}],notes:""}
+      })
+    }
+    handleChangeInput(name,value){
+
+      var exerciseNumber = "";
+      var exerciseInput = "";
+      var exerciseSet = "";
+      var triggeredStartOfTitle = false;
+      var CopyOfSessionExercise = this.state.sessionExercises.slice();
+
+      for(var i = 0; i < name.length;i++){
+        if(isNaN(name[i]) == false && triggeredStartOfTitle==false){
+          exerciseNumber += name[i];
+        }
+        if(isNaN(name[i]) == true){
+          triggeredStartOfTitle = true;
+          exerciseInput += name[i];
+        }
+        if(isNaN(name[i]) == false && triggeredStartOfTitle ==true){
+          exerciseSet += name[i];
+        }
+      }
+      for(var i = 0; i < CopyOfSessionExercise.length;i++){
+        if(CopyOfSessionExercise[i].key == exerciseNumber){
+          if(exerciseSet ==""){
+            CopyOfSessionExercise[i][exerciseInput] = value;
+          } else {
+            for(var m = 0; m < CopyOfSessionExercise[i].sets.length;m++){
+              if( CopyOfSessionExercise[i].sets[m].key == Number(exerciseSet)){
+                CopyOfSessionExercise[i].sets[m][exerciseInput] = value;
+              }
+            }
+          }
+        }
+      }
+      this.setState({
+        sessionExercises: CopyOfSessionExercise,
+        defaultSessionExercises: {key:1, title:"--select--",sets:[{key:1, goal:"",reps:"",comments:"",res:"",diff:""}],notes:""}
+      })
+    }
+
+    handleSubmit(e){
+      e.preventDefault();
+      axios({
+
+        method: 'post',
+        url: "/train/hangboardsession/",
+        data: {
+          type:this.state.exerciseTemplate,
+          sessionArray: this.state.sessionExercises
+        }
+      })
+      this.setState({
+        sessionExercises: [this.state.defaultSessionExercises],
+        criteria: false,
+        exerciseTemplate: "Overall Fitness",
+        defaultSessionExercises: {key:1, title:"--select--",sets:[{key:1, goal:"",reps:"",comments:"",res:"",diff:""}],notes:""}
+      })
+    }
 
     render(){
-      var numberOfExercises = Array(this.state.numberOfExercises).fill()
-       numberOfExercises = numberOfExercises.map((test,index)=>{
-        return <div key={index}>
-          <TrainSet sessionExercisesArray = {this.state.sessionExercises} workOuts = {this.state.workOuts} number={index}  onInputChange={this.handleInputChange} onDelete = {this.handleDelete}/>
-        </div>
-    })
+      var rows = [];
+      const {sessionExercises} = this.state;
+      for(var i = 0; i < sessionExercises.length;i++){
 
+        rows.push(<TrainSet onPlusClick = {this.handleAddingSetOfExercise} workOuts = {this.state.workOuts} onChangeInput = {this.handleChangeInput} key={i} sessionExercises = {sessionExercises[i]}/>)
+      }
       return(
-        <form onSubmit={this.handleSubmit}>
-          {numberOfExercises}
+        <Grid>
+          {!this.state.modal ? null :
+            // <h1> test </h1>
+              <Modal show={this.state.modal}>
+                <Modal.Header> Template Not Found </Modal.Header>
+                <Modal.Body>
+                  First Manually Add
+                </Modal.Body>
 
-          <Button style={{marginRight:"400px"}} onClick={this.handleAddingGroupSet}>Add Exercise</Button>
-          <Button type="submit">Submit </Button>
-        </form>
+
+              </Modal>
+
+          }
+          <form style={{border:"2px solid black"}} onSubmit = {this.handleCriteriaSubmit}>
+            <Row style={{marginBottom:"20px"}} className="show-grid">
+              <Col md={1}><label>Start a: </label></Col>
+              <Col md={2}>
+
+                <select name="exerciseTemplate" onChange = {(e)=>{this.handleCriteriaChange(e.target.name,e.target.value)}} value={this.state.exerciseTemplate}>
+                  <option>Overall Workout</option>
+                  <option>Ab Workout</option>
+                  <option>Upper Body Workout</option>
+                  <option>Finger Workout</option>
+                  <option>Fitness Test</option>
+                </select>
+              </Col>
+              <Col md={1}><label>sortFrom:</label></Col>
+              <Col md={2}>
+                <select value= {this.state.sortFrom} name= "sortFrom" onChange={(e)=>{this.handleCriteriaChange(e.target.name,e.target.value)}}>
+                  <option>Most Recent Session</option>
+                  <option>First Ever Session</option>
+                </select>
+              </Col>
+              <Col md={1}><label>^weight:</label></Col>
+              <Col md={2}>
+                <input name="weight" onChange = {(e)=>{this.handleCriteriaChange(e.target.name,e.target.value)}} type="number" style={{width:"50%"}} value = {this.state.weight} ></input>
+              </Col>
+
+              <Col md={1}><label>^reps:</label></Col>
+
+              <Col md={2}>
+                <input name="reps" onChange = {(e)=>{this.handleCriteriaChange(e.target.name,e.target.value)}} type="number" style={{width:"50%"}} value = {this.state.reps} ></input>
+              </Col>
+
+
+            </Row>
+
+              <Row className= "show-grid">
+              { !this.state.criteria &&
+                <Col md={2}>
+                  <Button bsStyle = "primary" type="submit">Establish Criteria</Button>
+
+                </Col>
+
+              }
+              {
+                  this.state.criteria &&
+                    <Col md={2}>
+                      <Button bsStyle = "danger" onClick = {this.handleClearCriteria}>Clear Criteria</Button>
+                    </Col>
+                }
+              </Row>
+            </form>
+
+
+          <form onSubmit={this.handleSubmit}>
+            {rows}
+            <Row className = "show-grid">
+              <Col md={3}>
+                <Button onClick={this.handleAddingGroupSet}>Add Exercise</Button>
+              </Col>
+              <Col md={3}>
+                <Button bsStyle="primary" type="submit">Submit </Button>
+              </Col>
+
+            </Row>
+          </form>
+        </Grid>
+
       )
     }
   }

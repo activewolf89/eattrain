@@ -5,7 +5,7 @@ var ExerciseSchema= new mongoose.Schema({
       type: String,
       required: [true, "Title is required"],
       minlength: [2, "Title has to be more than the min of 2 length"],
-      maxlength:[20, "Title has to be less than a max length of 20"],
+      maxlength:[30, "Title has to be less than a max length of 30"],
       trim: true,
     },
     Description: {

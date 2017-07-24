@@ -1,68 +1,63 @@
   import React,{Component} from "react";
   import PropTypes from 'prop-types';
-  import SetOfExercise from './SetOfExercise.js';
-  import {Grid,Row,Button,Col} from 'react-bootstrap';
+  import {Row,Col,Button} from 'react-bootstrap';
+  import TrainSetExercise from './TrainSetExercise.js';
   class TrainSet extends Component{
-    constructor(props){
-      super(props);
-      this.state = {
-        numberOfSetsInExercise: 1
-      }
-      this.handleAddASet = this.handleAddASet.bind(this);
-    }
-    handleAddASet(){
-      this.setState({
-        numberOfSetsInExercise: this.state.numberOfSetsInExercise + 1
-      })
-    }
+
+
     render(){
-      var setsInExercise = Array(this.state.numberOfSetsInExercise).fill();
-      const {workOuts} = this.props;
-      if(typeof(workOuts) === "object"){
+      var workOutOptions = this.props.workOuts.map((singleWorkout)=>{
 
-      var optionWorkOuts = workOuts.map((workout)=>{
-        return <option key={workout._id}>{workout.Title}</option>
-      })
-    }
-      setsInExercise = setsInExercise.map((test,index)=>{
-        return(
+          return <option key={singleWorkout.Title}>{singleWorkout.Title}</option>
 
-        <div key={index}>
-          <SetOfExercise exNumber = {this.props.number} exSet={index} onInputChange = {this.props.onInputChange}/>
-        </div>
-      )
       })
+      var trainSetRows = [];
+      for(var i = 0; i < this.props.sessionExercises.sets.length;i++){
+        if( i == this.props.sessionExercises.sets.length-1){
+          trainSetRows.push(<Row className="show-grid" key={i}><TrainSetExercise onPlusClick = {this.props.onPlusClick} exerciseNumber = {this.props.sessionExercises.key} onChangeInput = {this.props.onChangeInput} lastOne="true" sessionExercisesSet={this.props.sessionExercises.sets[i]}/> </Row>);
+
+        } else {
+          trainSetRows.push(<Row className="show-grid" key={i}><TrainSetExercise exerciseNumber = {this.props.sessionExercises.key} onChangeInput = {this.props.onChangeInput} sessionExercisesSet={this.props.sessionExercises.sets[i]}/> </Row>);
+
+        }
+      }
+// one of: "success", "warning", "danger", "info", "default", "primary", "link"
       return(
-        <Grid style={{marginTop:"10px"}}>
+        <div>
+          
           <Row className="show-grid">
-            <label style={{marginRight:"10px"}}>Exercise {this.props.number + 1} </label>
-            <select id= {"title"+this.props.number} name={"title"+this.props.number} onChange={(e)=>{this.props.onInputChange(e.target.name,e.target.value)}}>
-              <option>Select Your Option </option>
-              {optionWorkOuts}
+            <label style={{"marginRight":"20px"}}>{"Exercise #"+this.props.sessionExercises.key}</label>
+            <select value = {this.props.sessionExercises.title} onChange = {(e)=>{this.props.onChangeInput(e.target.name,e.target.value)}} name={this.props.sessionExercises.key+"title"} >
+              <option disabled name="select">--select--</option>
+              {workOutOptions}
             </select>
-            <label style={{marginRight:"10px",marginLeft:"10px"}} ><b>Notes</b> </label>
-            <input type="text" id={"notes"+this.props.number} name={"notes"+this.props.number} onChange={(e)=>{this.props.onInputChange(e.target.name,e.target.value)}}></input>
-            <Button style={{marginLeft:"20px"}} bsStyle="primary" onClick={this.handleAddASet}>Add Set</Button>
+            <label style={{"marginRight":"20px","marginLeft":"20px"}}>Notes: </label>
+            <input type="text" name={this.props.sessionExercises.key+"notes"} value={this.props.sessionExercises.notes} onChange = {(e)=>{this.props.onChangeInput(e.target.name,e.target.value)}}></input>
+
           </Row>
           <Row className="show-grid">
-            <Col md={1}><b>Goal:</b></Col>
-            <Col md={1}><b>Set:</b></Col>
-            <Col md={2}><b>Resistance:</b></Col>
-            <Col md={1}><b>#Reps:</b></Col>
-            <Col md={2}><b>Difficulty(1-10):</b></Col>
-            <Col md={3}><b>Comments:</b></Col>
-          </Row>
+            <Col md={1}><h5>Goal:</h5></Col>
+            <Col md={1}><h5>Set:</h5></Col>
+            <Col md={1}><h5>Resistance:</h5></Col>
+            <Col md={1}><h5>#Reps:</h5></Col>
+            <Col md={1}><h5>Difficulty:</h5></Col>
+            <Col md={1}><h5>Comments:</h5></Col>
+            <Col mdOffset={2} md={1}><h5>Actions:</h5></Col>
 
-          {setsInExercise}
-        </Grid>
+          </Row>
+          {trainSetRows}
+
+
+          <hr></hr>
+        </div>
 
       )
     }
   }
   TrainSet.propTypes = {
-    number: PropTypes.number.isRequired,
+    sessionExercises: PropTypes.object.isRequired,
+    onChangeInput: PropTypes.func.isRequired,
     workOuts: PropTypes.array.isRequired,
-    onInputChange: PropTypes.func.isRequired,
-    sessionExercisesArray: PropTypes.array.isRequired
+    onPlusClick: PropTypes.func.isRequired
   }
   export default TrainSet;
