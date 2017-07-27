@@ -6,7 +6,7 @@
 
     render(){
       return(
-          <Grid style={{border:"1px solid black", minHeight: "600px", width:"100%"}}>
+          <Grid style={{border:"1px solid black", width:"100%"}}>
 
             <Row className="show-grid" style={{height: "50%"}}>
               <Col sm={9} md={6} style={{height:"300px"}}><Link to="/train/hangboard"><Button style={{background: "green", width:"100%",height:"100%"}}>Hangboard</Button></Link></Col>

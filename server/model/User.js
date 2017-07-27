@@ -1,11 +1,22 @@
 var mongoose = require('mongoose')
-require('mongoose-type-email');
 
 var UserRegSchema= new mongoose.Schema({
-  Email: {
-      type: mongoose.SchemaTypes.Email,
-      required:true
-    }
+  firstName: {
+      type: String,
+      required:true,
+      trim:true
+    },
+    lastName: {
+        type: String,
+        required:true,
+        trim:true
+      },
+    bodyWeight: {
+        type: String,
+        required:true,
+        trim:true
+      }
+
  },{timestamps: true});
 
 

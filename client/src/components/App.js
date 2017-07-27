@@ -8,6 +8,8 @@
   //exercise
   import Exercise from './Body/Train/Exercise.js';
   import AddExercise from './Body/Train/AddExercise.js';
+  //User
+  import Profile from './Body/User/Profile.js';
   //
   import Eat from './Body/Eat/Eat.js';
   import About from './Body/AboutWeb/About.js';
@@ -23,11 +25,13 @@
         <div className = "container" style={{background:"gray"}}>
           <div className = "header" >
             <Header />
+
           </div>
-          <div className = "body" style={{ minHeight: "600px"}}>
+          <div className = "body" >
 
 
             <Route exact path = "/train" component={Train} />
+            <Route exact path = "/profile" component={Profile} />
             <Route exact path = "/train/hangboard" component={TrainingSession} />
             <Route exact path = "/exercise" component={Exercise} />
             <Route exact path = "/exercise/add" component={AddExercise} />

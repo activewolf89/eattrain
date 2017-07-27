@@ -11,19 +11,23 @@
           <Col md={1}><input  name={this.props.exerciseNumber + "res" + this.props.sessionExercisesSet.key} onChange = {(e)=>{this.props.onChangeInput(e.target.name,e.target.value)}} type="number" value={this.props.sessionExercisesSet.res}/></Col>
           <Col md={1}><input  name={this.props.exerciseNumber + "reps" + this.props.sessionExercisesSet.key} onChange = {(e)=>{this.props.onChangeInput(e.target.name,e.target.value)}} type="number" value={this.props.sessionExercisesSet.reps}/></Col>
           <Col md={1}><input  name={this.props.exerciseNumber + "diff" + this.props.sessionExercisesSet.key} onChange = {(e)=>{this.props.onChangeInput(e.target.name,e.target.value)}} type="number" value={this.props.sessionExercisesSet.diff}/></Col>
-                <Col md={1}><input name={this.props.exerciseNumber + "comments" + this.props.sessionExercisesSet.key} onChange = {(e)=>{this.props.onChangeInput(e.target.name,e.target.value)}} type="text" value={this.props.sessionExercisesSet.comments}/></Col>
-                {this.props.lastOne &&
-                  <Col mdOffset={2} md={1}><Button onClick={()=>{this.props.onPlusClick(this.props.exerciseNumber)}}> + </Button></Col>
-                }
-                </div>
+          <Col md={1}><input name={this.props.exerciseNumber + "comments" + this.props.sessionExercisesSet.key} onChange = {(e)=>{this.props.onChangeInput(e.target.name,e.target.value)}} type="text" value={this.props.sessionExercisesSet.comments}/></Col>
+          <Col mdOffset={1} md={2}>
+            
+            <Button style={{marginRight:"20px"}} bsStyle="success" onClick={()=>{this.props.inputModal(this.props.exerciseNumber,this.props.sessionExercisesSet.key)}}>Start</Button>
+            <Button onClick={()=>{this.props.onMinusClick(this.props.exerciseNumber, this.props.sessionExercisesSet.key)}}> - </Button>
+
+          </Col>
+        </div>
       )
     }
   }
   TrainSetExercise.propTypes = {
+    inputModal: PropTypes.func,
     sessionExercisesSet: PropTypes.object.isRequired,
     onChangeInput: PropTypes.func.isRequired,
     exerciseNumber: PropTypes.number.isRequired,
     lastOne: PropTypes.string,
-    onPlusClick: PropTypes.func
+    onMinusClick: PropTypes.func
   }
   export default TrainSetExercise;
